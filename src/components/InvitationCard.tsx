@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Phone, MapPin, Calendar, DollarSign, Sparkles } from "lucide-react";
 import songFile from "@/assets/seedhemaut.mp3";
-import cdImage from "@/assets/brand_new_logo.png";
+import cdImage from "@/assets/brand-new-logo.png";
 
 const InvitationCard = () => {
   /* ------------------ MUSIC LOGIC ------------------ */
