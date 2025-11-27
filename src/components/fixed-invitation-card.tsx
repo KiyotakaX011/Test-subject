@@ -6,13 +6,7 @@ import { Phone, MapPin, Calendar, DollarSign, Sparkles } from "lucide-react";
 // Note: You'll need to uncomment these imports in your actual project
  import songFile from "@/assets/seedhemaut.mp3";
 import cdImage from "@/assets/brand_new_logo.png";
- import TapMusic from "@/components/TapMusic";
-
-// Temporary placeholders for demo
-const songFile = "";
-const cdImage = "https://via.placeholder.com/40";
-
-const TapMusic = () => <div className="hidden">Tap Music Component</div>;
+ import TapMusic from "@/components/TapMusic.tsx;
 
 const InvitationCard = () => {
   /* ------------------ MUSIC LOGIC ------------------ */
