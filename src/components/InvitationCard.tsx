@@ -6,19 +6,23 @@ import songFile from "@/assets/seedhemaut.mp3";
 import cdImage from "@/assets/brand-new-logo.png";
 
 const InvitationCard = () => {
-  /* ------------------ MUSIC LOGIC ------------------ */
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [musicStarted, setMusicStarted] = useState(false);
+  const [showPlayButton, setShowPlayButton] = useState(false);
 
-  // Start music when user taps or scrolls ANYWHERE (first time only)
   useEffect(() => {
     const startMusic = () => {
       if (!musicStarted) {
-        audioRef.current?.play().catch(() => {});
-        setIsPlaying(true);
-        setMusicStarted(true);
-        // Remove listeners after first interaction
+        audioRef.current?.play()
+          .then(() => {
+            setIsPlaying(true);
+            setMusicStarted(true);
+          })
+          .catch(() => {
+            // Autoplay blocked - show manual play button
+            setShowPlayButton(true);
+          });
         window.removeEventListener("click", startMusic);
         window.removeEventListener("touchstart", startMusic);
         window.removeEventListener("scroll", startMusic);
@@ -36,7 +40,18 @@ const InvitationCard = () => {
     };
   }, [musicStarted]);
 
-  // Toggle play/pause when clicking the CD widget
+  const manualStartMusic = () => {
+    audioRef.current?.play()
+      .then(() => {
+        setIsPlaying(true);
+        setMusicStarted(true);
+        setShowPlayButton(false);
+      })
+      .catch((error) => {
+        console.error("Failed to play:", error);
+      });
+  };
+
   const togglePlay = () => {
     if (!audioRef.current) return;
     if (isPlaying) {
@@ -48,7 +63,6 @@ const InvitationCard = () => {
     }
   };
 
-  /* ------------------ ANIMATIONS ------------------ */
   const floatingAnimation = {
     y: [0, -10, 0],
     transition: {
@@ -70,10 +84,24 @@ const InvitationCard = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Hidden audio element */}
       <audio ref={audioRef} src={songFile} loop preload="auto" />
 
-      {/* Mini Music Widget - appears after first interaction */}
+      {showPlayButton && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-black/90 backdrop-blur-xl p-8 rounded-3xl border-2 border-neon-cyan shadow-[0_0_50px_rgba(0,255,255,0.5)]"
+        >
+          <p className="text-white text-center mb-4 text-lg">🎵 Start the party music?</p>
+          <button
+            onClick={manualStartMusic}
+            className="w-full px-8 py-4 bg-gradient-to-r from-neon-pink to-neon-cyan text-white font-bold rounded-full hover:scale-105 transition-transform"
+          >
+            Play Music
+          </button>
+        </motion.div>
+      )}
+
       {musicStarted && (
         <motion.div
           onClick={togglePlay}
@@ -82,7 +110,6 @@ const InvitationCard = () => {
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="fixed bottom-6 right-6 px-4 py-3 rounded-2xl bg-black/70 backdrop-blur-xl border border-neon-cyan/40 shadow-[0_0_20px_rgba(0,255,255,0.4)] flex items-center gap-3 cursor-pointer select-none z-50 hover:scale-105 transition-transform"
         >
-          {/* Rotating CD */}
           <motion.img
             src={cdImage}
             alt="Music CD"
@@ -100,7 +127,6 @@ const InvitationCard = () => {
         </motion.div>
       )}
 
-      {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           className="absolute top-20 left-10 w-72 h-72 bg-neon-pink/20 rounded-full blur-3xl"
@@ -109,16 +135,15 @@ const InvitationCard = () => {
         <motion.div
           className="absolute bottom-20 right-10 w-96 h-96 bg-neon-cyan/20 rounded-full blur-3xl"
           animate={floatingAnimation}
-          transition={{ ...floatingAnimation.transition, delay: 1 }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         />
         <motion.div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-neon-purple/20 rounded-full blur-3xl"
           animate={floatingAnimation}
-          transition={{ ...floatingAnimation.transition, delay: 2 }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
       </div>
 
-      {/* Main card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -126,7 +151,6 @@ const InvitationCard = () => {
         className="relative z-10 w-full max-w-2xl"
       >
         <div className="bg-card/80 backdrop-blur-xl rounded-3xl p-8 md:p-12 border-2 border-neon-pink/30 shadow-[0_0_50px_rgba(255,64,232,0.3)]">
-          {/* Sparkle decorations */}
           <motion.div
             className="absolute -top-4 -left-4"
             animate={glowAnimation}
@@ -136,12 +160,11 @@ const InvitationCard = () => {
           <motion.div
             className="absolute -top-4 -right-4"
             animate={glowAnimation}
-            transition={{ ...glowAnimation.transition, delay: 0.5 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
           >
             <Sparkles className="w-8 h-8 text-neon-cyan" />
           </motion.div>
 
-          {/* Header */}
           <motion.div
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -166,7 +189,6 @@ const InvitationCard = () => {
             </motion.h2>
           </motion.div>
 
-          {/* Details */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -189,7 +211,6 @@ const InvitationCard = () => {
             </div>
           </motion.div>
 
-          {/* Organizers */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -221,7 +242,6 @@ const InvitationCard = () => {
             </div>
           </motion.div>
 
-          {/* CTA Button */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -239,7 +259,6 @@ const InvitationCard = () => {
             </a>
           </motion.div>
 
-          {/* Footer text */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -250,7 +269,6 @@ const InvitationCard = () => {
           </motion.p>
         </div>
       </motion.div>
-
     </div>
   );
 };
