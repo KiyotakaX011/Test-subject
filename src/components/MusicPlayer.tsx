@@ -16,40 +16,40 @@ const MusicPlayer = () => {
   const analyserRef = useRef<AnalyserNode>();
   const audioContextRef = useRef<AudioContext>();
 
+  // Volume Sync
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume[0] / 100;
     }
   }, [volume]);
 
+  // Cleanup
   useEffect(() => {
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      if (audioContextRef.current) audioContextRef.current.close();
     };
   }, []);
 
+  // Setup audio visualizer
   const setupAudioContext = () => {
     if (!audioContextRef.current && audioRef.current) {
       const audioContext = new AudioContext();
       const analyser = audioContext.createAnalyser();
       const source = audioContext.createMediaElementSource(audioRef.current);
-      
+
       analyser.fftSize = 256;
       source.connect(analyser);
       analyser.connect(audioContext.destination);
-      
+
       audioContextRef.current = audioContext;
       analyserRef.current = analyser;
-      
+
       visualize();
     }
   };
 
+  // Visualizer canvas drawing
   const visualize = () => {
     if (!analyserRef.current || !canvasRef.current) return;
 
@@ -62,6 +62,143 @@ const MusicPlayer = () => {
 
     const draw = () => {
       animationRef.current = requestAnimationFrame(draw);
+
+      analyserRef.current!.getByteFrequencyData(dataArray);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = (canvas.width / bufferLength) * 2.2;
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        const barHeight = (dataArray[i] / 255) * canvas.height * 0.7;
+
+        const gradient = ctx.createLinearGradient(0, canvas.height - barHeight, 0, canvas.height);
+        gradient.addColorStop(0, "hsl(var(--neon-cyan))");
+        gradient.addColorStop(1, "hsl(var(--neon-pink))");
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+
+        x += barWidth + 1;
+      }
+    };
+
+    draw();
+  };
+
+  // Play Pause
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      setupAudioContext();
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  // Mute
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ delay: 1.2, duration: 0.5 }}
+      className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl 
+                 border-t border-neon-cyan/30 shadow-[0_-4px_30px_rgba(0,255,255,0.2)] z-50"
+    >
+      <div className="container mx-auto px-3 py-2">
+        <div className="flex items-center gap-4">
+
+          {/* 🎵 Smaller CD Artwork */}
+          <motion.div
+            className="relative w-10 h-10 flex-shrink-0"
+            animate={{ rotate: isPlaying ? 360 : 0 }}
+            transition={{
+              duration: 3,
+              repeat: isPlaying ? Infinity : 0,
+              ease: "linear",
+            }}
+          >
+            <div className="w-full h-full rounded-full bg-gradient-to-br from-neon-cyan via-primary to-neon-pink shadow-md">
+              <div className="absolute inset-1 bg-background rounded-full flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-gradient-to-br from-neon-pink to-neon-cyan" />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* ▶️ Play Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={togglePlay}
+            className="w-10 h-10 rounded-full bg-neon-cyan/20 hover:bg-neon-cyan/30 border border-neon-cyan/50"
+          >
+            {isPlaying ? (
+              <Pause className="w-4 h-4 text-neon-cyan" />
+            ) : (
+              <Play className="w-4 h-4 text-neon-cyan" />
+            )}
+          </Button>
+
+          {/* 🔊 Visualizer */}
+          <div className="flex-1 h-10 flex items-center">
+            <canvas
+              ref={canvasRef}
+              width={500}
+              height={40}
+              className="w-full h-full"
+            />
+          </div>
+
+          {/* 🔉 Volume */}
+          <div className="flex items-center gap-3 w-24">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleMute}
+              className="w-7 h-7"
+            >
+              {isMuted ? (
+                <VolumeX className="w-4 h-4 text-muted-foreground" />
+              ) : (
+                <Volume2 className="w-4 h-4 text-foreground" />
+              )}
+            </Button>
+
+            <Slider
+              value={volume}
+              onValueChange={setVolume}
+              max={100}
+              step={1}
+              className="flex-1"
+            />
+          </div>
+
+          {/* ⭐ Logo (small) */}
+          <img
+            src={brandNewLogo}
+            alt="Brand New"
+            className="w-6 h-6 object-contain opacity-80"
+          />
+        </div>
+      </div>
+
+      <audio ref={audioRef} src={audioFile} loop />
+    </motion.div>
+  );
+};
+
+export default MusicPlayer;      animationRef.current = requestAnimationFrame(draw);
       
       analyserRef.current!.getByteFrequencyData(dataArray);
 
