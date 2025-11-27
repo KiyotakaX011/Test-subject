@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Phone, MapPin, Calendar, DollarSign, Sparkles } from "lucide-react";
 
 // Note: You'll need to uncomment these imports in your actual project
-// import songFile from "@/assets/seedhemaut.mp3";
-// import cdImage from "@/assets/brand_new_logo.png";
-// import TapMusic from "@/components/TapMusic";
+ import songFile from "@/assets/seedhemaut.mp3";
+import cdImage from "@/assets/brand_new_logo.png";
+ import TapMusic from "@/components/TapMusic";
 
 // Temporary placeholders for demo
 const songFile = "";
