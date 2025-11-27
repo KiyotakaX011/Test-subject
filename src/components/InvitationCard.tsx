@@ -2,11 +2,9 @@ import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Phone, MapPin, Calendar, DollarSign, Sparkles } from "lucide-react";
-
-// Note: You'll need to uncomment these imports in your actual project
- import songFile from "@/assets/seedhemaut.mp3";
+import songFile from "@/assets/seedhemaut.mp3";
 import cdImage from "@/assets/brand_new_logo.png";
- import TapMusic from "@/components/TapMusic.tsx";
+import TapMusic from "@/components/TapMusic";
 
 const InvitationCard = () => {
   /* ------------------ MUSIC LOGIC ------------------ */
@@ -67,18 +65,8 @@ const InvitationCard = () => {
           onClick={togglePlay}
           initial={{ opacity: 0, scale: 0.8, x: 100 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
-          className="
-            fixed bottom-6 right-6
-            px-4 py-3
-            rounded-2xl
-            bg-black/60 backdrop-blur-xl
-            border border-cyan-400/40
-            shadow-[0_0_20px_rgba(0,255,255,0.4)]
-            flex items-center gap-3
-            cursor-pointer select-none z-50
-          "
+          className="fixed bottom-6 right-6 px-4 py-3 rounded-2xl bg-black/60 backdrop-blur-xl border border-cyan-400/40 shadow-[0_0_20px_rgba(0,255,255,0.4)] flex items-center gap-3 cursor-pointer select-none z-50"
         >
-          {/* Rotating CD */}
           <motion.img
             src={cdImage}
             alt="CD"
@@ -90,7 +78,6 @@ const InvitationCard = () => {
               ease: "linear",
             }}
           />
-
           <p className="text-cyan-400 font-semibold text-sm">
             {isPlaying ? "Playing..." : "Paused"}
           </p>
@@ -107,11 +94,13 @@ const InvitationCard = () => {
         />
         <motion.div
           className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl"
-          animate={{ ...floatingAnimation, transition: { ...floatingAnimation.transition, delay: 1 } }}
+          animate={floatingAnimation}
+          transition={{ ...floatingAnimation.transition, delay: 1 }}
         />
         <motion.div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl"
-          animate={{ ...floatingAnimation, transition: { ...floatingAnimation.transition, delay: 2 } }}
+          animate={floatingAnimation}
+          transition={{ ...floatingAnimation.transition, delay: 2 }}
         />
       </div>
 
@@ -123,17 +112,18 @@ const InvitationCard = () => {
         className="relative z-10 w-full max-w-2xl"
       >
         <div className="bg-slate-800/80 backdrop-blur-xl rounded-3xl p-8 md:p-12 border-2 border-pink-500/30 shadow-[0_0_50px_rgba(255,64,232,0.3)]">
-
+          
           {/* Sparkles */}
-          <motion.div className="absolute -top-4 -left-4" animate={glowAnimation}>
+          <motion.div 
+            className="absolute -top-4 -left-4" 
+            animate={glowAnimation}
+          >
             <Sparkles className="w-8 h-8 text-yellow-400" />
           </motion.div>
           <motion.div
             className="absolute -top-4 -right-4"
-            animate={{
-              ...glowAnimation,
-              transition: { ...glowAnimation.transition, delay: 0.5 },
-            }}
+            animate={glowAnimation}
+            transition={{ ...glowAnimation.transition, delay: 0.5 }}
           >
             <Sparkles className="w-8 h-8 text-cyan-400" />
           </motion.div>
@@ -226,9 +216,7 @@ const InvitationCard = () => {
             className="text-center"
           >
             <a href="https://wa.me/917819037576?text=Count%20me%20in!" target="_blank" rel="noopener noreferrer">
-              <Button
-                className="text-lg px-12 py-6 rounded-full font-bold uppercase tracking-wider bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-[0_0_20px_rgba(236,72,153,0.5)] hover:shadow-[0_0_30px_rgba(236,72,153,0.8)] transition-all duration-300"
-              >
+              <Button className="text-lg px-12 py-6 rounded-full font-bold uppercase tracking-wider bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-[0_0_20px_rgba(236,72,153,0.5)] hover:shadow-[0_0_30px_rgba(236,72,153,0.8)] transition-all duration-300">
                 Reserve Your Spot
               </Button>
             </a>
